@@ -25,7 +25,6 @@ public class StarryItems {
         }};
 
         lithium = new Item("lithium", Color.valueOf("747d91")){{
-           hardness = 1;
         }};
 
     }

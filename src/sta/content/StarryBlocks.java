@@ -1,6 +1,7 @@
 package sta.content;
 
 import arc.graphics.Color;
+import mindustry.content.Liquids;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.part.RegionPart;
 import mindustry.type.Category;
@@ -10,6 +11,7 @@ import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.OreBlock;
 import mindustry.world.blocks.environment.StaticWall;
+import mindustry.world.blocks.production.Drill;
 import mindustry.world.draw.DrawTurret;
 
 import static mindustry.type.ItemStack.with;
@@ -21,7 +23,10 @@ public class StarryBlocks {
     cobaltOre, darkgrass, darkmossWall, dehydrate, dune, dunecliffWall, hematiteOre, iridiumOre, lightmossWall, pinkgrass, pinkstone,
 
     //turrets
-    chire;
+    chire,
+
+    //production
+    cobaltDrill;
 
     public static void load() {
 
@@ -103,5 +108,18 @@ public class StarryBlocks {
             researchCostMultiplier = 0.10f;
 
         }};*/
+
+        cobaltDrill = new Drill("cobalt-drill"){{
+            requirements(Category.production, with(StarryItems.cobalt, 18));
+            tier = 1;
+            drillTime = 770;
+            size = 2;
+            squareSprite = false;
+
+            researchCost = with(StarryItems.cobalt, 10);
+
+            consumeLiquid(Liquids.water, 0.05f).boost();
+        }};
+
     }
 }
