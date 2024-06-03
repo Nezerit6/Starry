@@ -1,16 +1,11 @@
 package sta;
 
-import arc.*;
 import arc.util.*;
-import mindustry.*;
-import mindustry.content.*;
-import mindustry.game.EventType.*;
-import mindustry.gen.*;
 import mindustry.mod.*;
-import mindustry.ui.dialogs.*;
 import sta.content.StarryBlocks;
 import sta.content.StarryItems;
 import sta.content.StarryPlanets;
+import sta.content.StarrySounds;
 
 public class Starry extends Mod{
 
@@ -35,9 +30,9 @@ public class Starry extends Mod{
     public void loadContent(){
         Log.info("Loading some example content.");
 
+        StarrySounds.load();
         StarryItems.load();
         StarryBlocks.load();
         StarryPlanets.load();
     }
-
 }

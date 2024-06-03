@@ -1,24 +1,30 @@
 package sta.content;
 
 import arc.graphics.Color;
+import arc.util.Tmp;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
 import mindustry.content.StatusEffects;
-import mindustry.entities.bullet.BasicBulletType;
+import mindustry.entities.Effect;
+import mindustry.entities.Units;
+import mindustry.entities.bullet.*;
 import mindustry.entities.effect.MultiEffect;
 import mindustry.entities.part.DrawPart;
 import mindustry.entities.part.RegionPart;
 import mindustry.gen.Sounds;
+import mindustry.gen.Unit;
+import mindustry.graphics.Pal;
 import mindustry.type.Category;
-import mindustry.type.ItemStack;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
+import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.OreBlock;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.draw.DrawTurret;
+import sta.world.blocks.power.MagnesiumNode;
 
 import static mindustry.type.ItemStack.with;
 
@@ -29,10 +35,10 @@ public class StarryBlocks {
     cobaltOre, darkgrass, darkmossWall, dehydrate, dune, dunecliffWall, hematiteOre, iridiumOre, lightmossWall, pinkgrass, pinkstone,
 
     //turrets
-    chire, basedTurret,
+    chire, basedTurret, stormBringer, test,
 
     //production
-    cobaltDrill;
+    cobaltDrill, magnesiumNode;
 
     public static void load() {
 
@@ -76,14 +82,17 @@ public class StarryBlocks {
         pinkstone = new Floor("pinkstone"){{
         }};
 
-        chire = new ItemTurret("chire"){{
+        /*chire = new ItemTurret("chire"){{
             requirements(Category.turret, with(StarryItems.cobalt, 24));
+            reload = 3;
             ammo(
-                    StarryItems.cobalt, new BasicBulletType(3.4f,11){{
+                    StarryItems.cobalt, new BasicBulletType(10.0f,4){{
                         width = 6;
                         height = 8;
                         lifetime = 60;
                         ammoPerShot = 2;
+                        collidesTeam = true;
+                        collidesGround = true;
                     }}
             );
 
@@ -113,13 +122,13 @@ public class StarryBlocks {
             coolant = consumeCoolant(0.1f);
             researchCostMultiplier = 0.10f;
 
-        }};
+        }};*/
 
         basedTurret = new ItemTurret("BasedTurret") {{
             requirements(Category.turret, with(Items.copper, 110, Items.lead, 65, Items.titanium, 35, Items.silicon, 20));
             health = 430;
             rotateSpeed = 4.2f;
-            recoil = 1f;
+            recoil = 3f;
             size = 2;
             range = 205;
             reload = 90f;
@@ -128,7 +137,7 @@ public class StarryBlocks {
             inaccuracy = 3;
             liquidCapacity = 70;
             squareSprite = false;
-            shootSound = Sounds.laser;
+            shootSound = StarrySounds.bigLaserShoot;
             shootEffect = Fx.none;
             smokeEffect = StarryFx.laserSparks;
             moveWhileCharging = false;
@@ -194,6 +203,80 @@ public class StarryBlocks {
             }};
         }};
 
+        stormBringer = new PowerTurret("StormBringer"){{
+            requirements(Category.turret, with(StarryItems.cobalt, 1));
+            size = 2;
+            range = 130;
+            recoil = 2f;
+            reload = 420f;
+            health = 600;
+            inaccuracy = 14;
+            rotateSpeed = 7;
+
+            //accurateDelay = false;
+            shoot.shots = 32;
+            shoot.shotDelay = 4;
+            shoot.firstShotDelay = 15f;
+
+            shootEffect = Fx.sparkShoot;
+            shootSound = Sounds.lasershoot;
+
+            consumePower(1.4f);
+            coolant = consumeCoolant(0.2f);
+
+            shootType = new LaserBoltBulletType(6, 13){{
+                knockback = 0.3f;
+                lifetime = 20f;
+                backColor = Pal.heal;
+                frontColor = Color.white;
+                status = StatusEffects.corroded;
+                statusDuration = 240f;
+                smokeEffect = Fx.none;
+                hitEffect = despawnEffect = Fx.hitLaser;
+                hitColor = trailColor = Pal.heal;
+                trailLength = 2;
+                trailWidth = 1.8f;
+            }};
+
+            drawer = new DrawTurret("based-") {{
+                parts.addAll(
+                        new RegionPart("-side"){{
+                            progress = PartProgress.warmup;
+                            mirror = true;
+                            under = false;
+                            moveY = 4.5f;
+                            moves.add(new PartMove(PartProgress.heat, 0f, -4.5f, 0f));
+                        }}
+                );
+            }};
+        }};
+
+        /*regeneratingBlaster = new ItemTurret("regeneratingBlaster"){{
+            requirements(Category.turret, with(StarryItems.cobalt, 24));
+            size = 1;
+            recoil = 1;
+            reload = 39;
+            range = 110;
+            health = 150;
+            inaccuracy = 0;
+            rotateSpeed = 13.4f;
+            shootSound = Sounds.lasershoot;
+            consumePower(1.4f);
+            researchCostMultiplier = 0.10f;
+
+
+
+            ammo(
+                    StarryItems.cobalt, new HealBulletType(5.3f,60f){{
+                        lifetime = 24;
+                        ammoPerShot = 2;
+                    }}
+            );
+
+            drawer = new DrawTurret("based-");
+
+        }};*/
+
         cobaltDrill = new Drill("cobalt-drill"){{
             requirements(Category.production, with(StarryItems.cobalt, 18));
             tier = 1;
@@ -206,5 +289,17 @@ public class StarryBlocks {
             consumeLiquid(Liquids.water, 0.05f).boost();
         }};
 
+        magnesiumNode = new MagnesiumNode("magnesiumNode"){{
+            requirements(Category.power, with(StarryItems.hematite, 10));
+            health = 65;
+            baseExplosiveness = 1;
+            laserRange = 5;
+            outputsPower = true;
+            //laserColor1 = Color.black;
+            //laserColor2 = Color.valueOf("5c5e9e");
+
+            maxNodes = 5;
+            //consumePowerBuffered(750f);
+        }};
     }
 }
